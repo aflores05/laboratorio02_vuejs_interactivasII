@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intro VueJS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <!-- Import Vue.js -->
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+    
+    <h1 class="display-2">Our events</h1>
+    
+    <div id="app" class="container-fluid">  <!-- app -->
+        <!-- Cart -->
+        <div class="w-100 h-auto d-inline-block pt-3 pe-5 bg-info text-dark mb-5 shadow-sm">
+            <div class="row">
+                <div class="col-11">
+                    <p class="fw-bolder float-end">Cart: ₡ {{ cart }} </p>
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-light pt-1 mb-3" data-bs-toggle="modal" data-bs-target="#listEventModal">SHOP</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cart -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="eventModalLabel">{{ events[selectedEvent].title }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img v-bind:src="events[selectedEvent].image" class="img-fluid" v-bind:alt="events[selectedEvent].title">
+                        <p>{{ events[selectedEvent].description }}</p>
+                        <p>{{ events[selectedEvent].date }}</p>
+                        <p>{{ events[selectedEvent].location }}</p>
+                        <p> ₡ {{ events[selectedEvent].cost}}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-md-2">  
+                            <label for="quantity" class="visually-hidden">Qty</label>
+                            <input type="number" min="1" :max="inventory" v-model="qty" v-on:blur="checkInventory" class="form-control" id="quantity" placeholder="0" required>
+                        </div>
+                        <button v-if="available" type="button" class="btn btn-primary" data-bs-dismiss="modal" v-on:click="addToCart">Add to cart</button>
+                        <button v-else type="button" class="btn btn-secondary" disabled>Add to cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+        <!-- Check Out -->
+        <div class="modal fade" id="checkOutModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="eventModalLabel">Check Out</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                              <label for="exampleInputName" class="form-label">Name</label>
+                              <input type="text" v-on:blur="checkName" v-model="fullName" class="form-control" :class="{'border-danger':!isValidName}" id="exampleInputName">
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Email address</label>
+                                <input type="email" v-on:blur="checkEmail" v-model="email" class="form-control" :class="{'border-danger':!isValidEmail}" id="exampleInputEmail1" aria-describedby="emailHelp">
+                                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                              </div>
+                        </form>
+                        <ul v-for="(ticket, index) in tickets" class="list-group">
+                            <li class="list-group-item">{{ events[ticket.event].title }} ({{ ticket.qty}} x {{ events[ticket.event].cost }}) {{ticket.subTotal}}</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button v-if="isValidName && isValidEmail" type="button" v-on:click="submit(index)" data-bs-dismiss="modal" class="btn btn-primary mx-auto" >Confirm</button>
+                        <button v-else type="button" class="btn btn-secondary mx-auto" disabled >Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Check Out -->
+
+         <!-- Events List -->
+         <div class="modal fade" id="listEventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="eventModalLabel">Eventos seleccionados</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul v-for="(ticket, index) in tickets" class="list-group">
+                            <li class="list-group-item">{{ events[ticket.event].title }} ({{ ticket.qty}} x {{ events[ticket.event].cost }}) {{ticket.subTotal}} <button type="button" class="btn btn-primary" v-on:click="removeFromCart(index)">Remove</button></li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#checkOutModal" data-bs-dismiss="modal" aria-label="Close">Check Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Events List -->
+
+        <!-- Events -->
+        <div class="row">
+                
+            <div v-for="(event, index) in events" class="col-md-4 card">
+                <img v-bind:src="event.image" class="card-img-top" v-bind:alt="event.title">
+                <div class="card-body shadow">
+                    <h5 class="card-title">{{ event.title }}</h5> 
+                    <p class="card-text text-truncate">{{ event.description }}</p>
+                    <button type="button" v-on:click="showEventDetails(index)" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal">
+                        DETAILS
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        <!-- Events -->
+    </div> <!-- app -->
+
+</body>
+<script src="./js/main.js"></script>
+<script>
+    const mountedApp = app.mount("#app");
+</script>
+</html>

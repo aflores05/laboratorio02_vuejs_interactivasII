@@ -1,0 +1,5 @@
+<!-- Cart -->
+<div class="w-100 h-auto d-inline-block pt-3 pe-5 bg-info text-dark mb-5 shadow-sm">
+    <p class="fw-bolder float-end">Cart: {{ cart }} </p>
+</div>
+<!-- Cart -->

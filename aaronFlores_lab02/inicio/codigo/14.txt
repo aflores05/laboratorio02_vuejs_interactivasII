@@ -1,0 +1,1 @@
+{{ events[selectedEvent].title }}

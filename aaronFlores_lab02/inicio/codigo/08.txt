@@ -1,0 +1,12 @@
+showEventDetails(index){
+    
+},
+addToCart(){
+    
+},
+removeFromCart(){
+    
+},
+closeModal(){
+    
+}

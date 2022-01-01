@@ -1,0 +1,16 @@
+<!-- Events -->
+<div class="row">
+        
+    <div class="col-md-4 card">
+        <img src="./imgs/event01.jpg" class="card-img-top" alt="Event">
+        <div class="card-body shadow">
+            <h5 class="card-title">title</h5>
+            <p class="card-text text-truncate">description</p>
+            <button type="button" class="btn btn-primary">
+                DETAILS
+            </button>
+        </div>
+    </div>
+
+</div>
+<!-- Events -->
